@@ -5,8 +5,11 @@ pub trait ValExtAdd: Sized {
     fn add(
         &self,
         other: Self,
-        parent_size: f32,
-        viewport_size: Vec2,
+        scale_factor: f32,
+        physical_base_value: f32,
+        physical_target_size: Vec2,
+        em_size: EmSize,
+        rem_size: RemSize,
     ) -> Result<Self, ValArithmeticError>;
 }
 
@@ -14,10 +17,24 @@ impl ValExtAdd for Val {
     fn add(
         &self,
         other: Self,
-        parent_size: f32,
-        viewport_size: Vec2,
+        scale_factor: f32,
+        physical_base_value: f32,
+        physical_target_size: Vec2,
+        em_size: EmSize,
+        rem_size: RemSize,
     ) -> Result<Self, ValArithmeticError> {
-        Ok(Px(self.resolve(parent_size, viewport_size)?
-            + other.resolve(parent_size, viewport_size)?))
+        Ok(Px(self.resolve(
+            scale_factor,
+            physical_base_value,
+            physical_target_size,
+            em_size,
+            rem_size,
+        )? + other.resolve(
+            scale_factor,
+            physical_base_value,
+            physical_target_size,
+            em_size,
+            rem_size,
+        )?))
     }
 }

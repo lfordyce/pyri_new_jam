@@ -151,13 +151,17 @@ impl Configure for UiAudio {
 }
 
 #[allow(dead_code)]
-pub fn ui_audio(audio_settings: &AudioSettings, handle: Handle<AudioSource>) -> impl Bundle {
+pub fn ui_audio(
+    audio_settings: &AudioSettings,
+    handle: Handle<AudioSource>,
+    speed: f32,
+) -> impl Bundle {
     (
-        Name::new("UiSample"),
+        Name::new("UiAudio"),
         UiAudio,
         AudioPlayer(handle),
         PlaybackSettings::DESPAWN
             .with_volume(audio_settings.ui_volume())
-            .with_speed(thread_rng().gen_range(0.9..1.5)),
+            .with_speed(speed),
     )
 }

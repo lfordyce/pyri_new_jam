@@ -1,16 +1,16 @@
-use bevy_simple_prefs::Prefs;
-use bevy_simple_prefs::PrefsPlugin;
+// use bevy_simple_prefs::{Prefs, PrefsPlugin, PrefsStatus};
 
 use crate::core::audio::AudioSettings;
 use crate::menu::Menu;
 use crate::menu::MenuRootUi;
 use crate::prelude::*;
+use crate::util::rich_text::RichText;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(StateFlush, Menu::Settings.on_enter(spawn_settings_menu));
 
     app.configure::<(
-        Settings,
+        // Settings,
         MasterVolumeSelector,
         MusicVolumeSelector,
         SfxVolumeSelector,
@@ -18,10 +18,10 @@ pub(super) fn plugin(app: &mut App) {
     )>();
 }
 
-fn spawn_settings_menu(mut commands: Commands, menu_root_ui: Single<Entity, With<MenuRootUi>>) {
+fn spawn_settings_menu(mut commands: Commands, menu_root: Res<MenuRootUi>) {
     commands
-        .entity(*menu_root_ui)
-        .with_child(widget::root(children![widget::full_popup(children![
+        .entity(menu_root.ui)
+        .with_child(widget::root(children![widget::popup(children![
             widget::center(children![
                 widget::header(children![widget::h1("[b]Settings")]),
                 grid(),
@@ -32,7 +32,7 @@ fn spawn_settings_menu(mut commands: Commands, menu_root_ui: Single<Entity, With
         ])]));
 }
 
-fn go_back(_: Trigger<Pointer<Click>>, mut menu: ResMut<NextStateStack<Menu>>) {
+fn go_back(_: On<PointerClick>, mut menu: ResMut<NextStateStack<Menu>>) {
     menu.pop();
 }
 
@@ -103,11 +103,11 @@ fn update_master_volume_selector(
     }
 }
 
-fn master_volume_down(_: Trigger<Pointer<Click>>, mut audio_settings: ResMut<AudioSettings>) {
+fn master_volume_down(_: On<PointerClick>, mut audio_settings: ResMut<AudioSettings>) {
     audio_settings.master_volume = (audio_settings.master_volume - 0.1).max(0.0);
 }
 
-fn master_volume_up(_: Trigger<Pointer<Click>>, mut audio_settings: ResMut<AudioSettings>) {
+fn master_volume_up(_: On<PointerClick>, mut audio_settings: ResMut<AudioSettings>) {
     audio_settings.master_volume = (audio_settings.master_volume + 0.1).min(1.0);
 }
 
@@ -151,11 +151,11 @@ fn update_music_volume_selector(
     }
 }
 
-fn music_volume_down(_: Trigger<Pointer<Click>>, mut audio_settings: ResMut<AudioSettings>) {
+fn music_volume_down(_: On<PointerClick>, mut audio_settings: ResMut<AudioSettings>) {
     audio_settings.music_volume = (audio_settings.music_volume - 0.1).max(0.0);
 }
 
-fn music_volume_up(_: Trigger<Pointer<Click>>, mut audio_settings: ResMut<AudioSettings>) {
+fn music_volume_up(_: On<PointerClick>, mut audio_settings: ResMut<AudioSettings>) {
     audio_settings.music_volume = (audio_settings.music_volume + 0.1).min(1.0);
 }
 
@@ -199,11 +199,11 @@ fn update_sfx_volume_selector(
     }
 }
 
-fn sfx_volume_down(_: Trigger<Pointer<Click>>, mut audio_settings: ResMut<AudioSettings>) {
+fn sfx_volume_down(_: On<PointerClick>, mut audio_settings: ResMut<AudioSettings>) {
     audio_settings.sfx_volume = (audio_settings.sfx_volume - 0.1).max(0.0);
 }
 
-fn sfx_volume_up(_: Trigger<Pointer<Click>>, mut audio_settings: ResMut<AudioSettings>) {
+fn sfx_volume_up(_: On<PointerClick>, mut audio_settings: ResMut<AudioSettings>) {
     audio_settings.sfx_volume = (audio_settings.sfx_volume + 0.1).min(1.0);
 }
 
@@ -247,31 +247,32 @@ fn update_ui_volume_selector(
     }
 }
 
-fn ui_volume_down(_: Trigger<Pointer<Click>>, mut audio_settings: ResMut<AudioSettings>) {
+fn ui_volume_down(_: On<PointerClick>, mut audio_settings: ResMut<AudioSettings>) {
     audio_settings.ui_volume = (audio_settings.ui_volume - 0.1).max(0.0);
 }
 
-fn ui_volume_up(_: Trigger<Pointer<Click>>, mut audio_settings: ResMut<AudioSettings>) {
+fn ui_volume_up(_: On<PointerClick>, mut audio_settings: ResMut<AudioSettings>) {
     audio_settings.ui_volume = (audio_settings.ui_volume + 0.1).min(1.0);
 }
-
-#[derive(Prefs, Reflect, Default)]
-struct Settings {
-    pub audio_settings: AudioSettings,
-}
-
-impl Configure for Settings {
-    fn configure(app: &mut App) {
-        app.add_plugins(PrefsPlugin::<Settings> {
-            #[cfg(feature = "native")]
-            path: {
-                let path = r!(dirs::config_local_dir()).join(env!("CARGO_PKG_NAME"));
-                // Create parent directories if necessary.
-                r!(std::fs::create_dir_all(&path).is_ok());
-                r!(std::fs::exists(&path));
-                path.join("settings.ron")
-            },
-            ..default()
-        });
-    }
-}
+//
+// #[derive(Prefs, Reflect, Default)]
+// struct Settings {
+//     pub audio_settings: AudioSettings,
+// }
+//
+// impl Configure for Settings {
+//     fn configure(app: &mut App) {
+//         app.add_plugins(PrefsPlugin::<Settings>::default());
+//         // app.add_plugins(PrefsPlugin::<Settings> {
+//         //     #[cfg(feature = "native")]
+//         //     path: {
+//         //         let path = r!(dirs::config_local_dir()).join(env!("CARGO_PKG_NAME"));
+//         //         // Create parent directories if necessary.
+//         //         r!(std::fs::create_dir_all(&path).is_ok());
+//         //         r!(std::fs::exists(&path));
+//         //         path.join("settings.ron")
+//         //     },
+//         //     ..default()
+//         // });
+//     }
+// }

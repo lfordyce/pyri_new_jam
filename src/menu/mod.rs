@@ -10,29 +10,36 @@ pub(super) fn plugin(app: &mut App) {
     app.configure::<(MenuRootUi, Menu, MenuAction, MenuTime)>();
 }
 
-#[derive(Component, Reflect, Debug)]
-#[reflect(Component)]
-struct MenuRootUi;
+#[derive(Resource, Reflect)]
+#[reflect(Resource)]
+pub struct MenuRootUi {
+    pub ui: Entity,
+}
 
 impl Configure for MenuRootUi {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
-        app.add_systems(Startup, spawn_menu_root_ui);
+        app.init_resource::<Self>();
     }
 }
 
-fn spawn_menu_root_ui(mut commands: Commands) {
-    commands.spawn((
-        Name::new("MenuUi"),
-        MenuRootUi,
-        Node::DEFAULT.full_size(),
-        Pickable::IGNORE,
-        GlobalZIndex(2),
-        DespawnOnExitState::<Menu>::Descendants,
-    ));
+impl FromWorld for MenuRootUi {
+    fn from_world(world: &mut World) -> Self {
+        Self {
+            ui: world
+                .spawn((
+                    Name::new("MenuUi"),
+                    Node::DEFAULT.full_size(),
+                    GlobalZIndex(2),
+                    Pickable::IGNORE,
+                    DespawnOnExitState::<Menu>::Descendants,
+                ))
+                .id(),
+        }
+    }
 }
 
-#[derive(State, Reflect, Copy, Clone, Eq, PartialEq, Debug)]
+#[derive(State, Resource, Reflect, Copy, Clone, Eq, PartialEq, Debug)]
 #[state(before(Pause), next(NextStateStack<Self>), react, log_flush)]
 #[reflect(Resource)]
 pub enum Menu {
@@ -71,18 +78,25 @@ pub enum MenuAction {
 
 impl Configure for MenuAction {
     fn configure(app: &mut App) {
-        app.init_resource::<ActionState<Self>>();
-        app.insert_resource(
-            InputMap::default()
-                .with(Self::Back, GamepadButton::South)
-                .with(Self::Back, KeyCode::Escape),
-        );
+        // app.init_resource::<ActionState<Self>>();
+        // app.insert_resource(
+        //     InputMap::default()
+        //         .with(Self::Back, GamepadButton::South)
+        //         .with(Self::Back, KeyCode::Escape),
+        // );
         app.add_plugins(InputManagerPlugin::<Self>::default());
+        app.add_systems(Startup, |mut commands: Commands| {
+            commands.spawn(
+                InputMap::default()
+                    .with(Self::Back, GamepadButton::South)
+                    .with(Self::Back, KeyCode::Escape),
+            );
+        });
         app.add_systems(
             Update,
             Menu::pop
                 .in_set(UpdateSystems::RecordInput)
-                .run_if(Menu::is_enabled.and(action_just_pressed(Self::Back))),
+                .run_if(Menu::is_enabled.and_then(action_just_pressed(Self::Back))),
         );
     }
 }

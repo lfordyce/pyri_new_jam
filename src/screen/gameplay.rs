@@ -14,7 +14,7 @@ pub(super) fn plugin(app: &mut App) {
                 spawn_menu_overlay.run_if(
                     Screen::Gameplay
                         .will_enter()
-                        .and(Screen::is_triggered.or(Menu::is_disabled)),
+                        .and_then(Screen::is_triggered.or_else(Menu::is_disabled)),
                 ),
             ),
         ),
@@ -71,14 +71,23 @@ pub enum GameplayAction {
 
 impl Configure for GameplayAction {
     fn configure(app: &mut App) {
-        app.init_resource::<ActionState<Self>>();
-        app.insert_resource(
-            InputMap::default()
-                .with(Self::Pause, GamepadButton::Start)
-                .with(Self::Pause, KeyCode::Escape)
-                .with(Self::Pause, KeyCode::KeyP)
-                .with(Self::CloseMenu, KeyCode::KeyP),
-        );
+        // app.init_resource::<ActionState<Self>>();
+        // app.insert_resource(
+        //     InputMap::default()
+        //         .with(Self::Pause, GamepadButton::Start)
+        //         .with(Self::Pause, KeyCode::Escape)
+        //         .with(Self::Pause, KeyCode::KeyP)
+        //         .with(Self::CloseMenu, KeyCode::KeyP),
+        // );
+        app.add_systems(Startup, |mut commands: Commands| {
+            commands.spawn(
+                InputMap::default()
+                    .with(Self::Pause, GamepadButton::Start)
+                    .with(Self::Pause, KeyCode::Escape)
+                    .with(Self::Pause, KeyCode::KeyP)
+                    .with(Self::CloseMenu, KeyCode::KeyP),
+            );
+        });
         app.add_plugins(InputManagerPlugin::<Self>::default());
         app.add_systems(
             Update,
@@ -86,10 +95,10 @@ impl Configure for GameplayAction {
                 Menu::Pause
                     .enter()
                     .in_set(UpdateSystems::RecordInput)
-                    .run_if(Menu::is_disabled.and(action_just_pressed(Self::Pause))),
+                    .run_if(Menu::is_disabled.and_then(action_just_pressed(Self::Pause))),
                 Menu::clear
                     .in_set(UpdateSystems::RecordInput)
-                    .run_if(Menu::is_enabled.and(action_just_pressed(Self::CloseMenu))),
+                    .run_if(Menu::is_enabled.and_then(action_just_pressed(Self::CloseMenu))),
             )),
         );
     }

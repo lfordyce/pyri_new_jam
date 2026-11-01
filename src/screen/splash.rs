@@ -33,14 +33,18 @@ fn spawn_splash_screen(
         .entity(*screen_root_ui)
         .with_child(widget::center(children![(
             Name::new("SplashImage"),
-            ImageNode::new(asset_server.load_with_settings(
-                // TODO: Workaround for <https://github.com/bevyengine/bevy/issues/14246>.
-                //       Use `embedded_asset!` once that's fixed.
-                "image/splash.png",
-                |settings: &mut ImageLoaderSettings| {
-                    settings.sampler = ImageSampler::linear();
-                },
-            )),
+            ImageNode::new(
+                asset_server
+                    .load_builder()
+                    .with_settings(
+                        // TODO: Workaround for <https://github.com/bevyengine/bevy/issues/14246>.
+                        //       Use `embedded_asset!` once that's fixed.
+                        |settings: &mut ImageLoaderSettings| {
+                            settings.sampler = ImageSampler::linear();
+                        },
+                    )
+                    .load("image/splash.png",)
+            ),
             Node::DEFAULT.width(Percent(70.0)),
             ThemeColor::BodyText.set::<ImageNode>(),
         )]));

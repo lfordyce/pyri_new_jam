@@ -1,4 +1,4 @@
-use bevy::ui::UiDebugOptions;
+use bevy::ui_render::UiDebugOptions;
 
 use crate::prelude::*;
 

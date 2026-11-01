@@ -6,7 +6,6 @@ pub mod color;
 pub mod grid;
 pub mod interaction;
 pub mod text;
-pub mod tooltip;
 pub mod widget;
 
 #[allow(unused_imports)]
@@ -36,7 +35,6 @@ pub(super) fn plugin(app: &mut App) {
         grid::plugin,
         interaction::plugin,
         text::plugin,
-        tooltip::plugin,
     ));
 }
 

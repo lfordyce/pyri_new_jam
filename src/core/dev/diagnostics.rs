@@ -4,6 +4,9 @@ use bevy::diagnostic::EntityCountDiagnosticsPlugin;
 use bevy::diagnostic::FrameTimeDiagnosticsPlugin;
 use bevy::diagnostic::LogDiagnosticsPlugin;
 use bevy::diagnostic::SystemInformationDiagnosticsPlugin;
+use bevy::dev_tools::diagnostics_overlay::{
+    DiagnosticsOverlay, DiagnosticsOverlayItem, DiagnosticsOverlayPlugin,
+};
 
 use crate::core::dev::DevConfig;
 use crate::prelude::*;
@@ -14,15 +17,30 @@ pub(super) fn plugin(app: &mut App) {
         // Note: This is incompatible with the `bevy/dynamic_linking` feature.
         #[cfg(not(feature = "dev"))]
         SystemInformationDiagnosticsPlugin,
-        EntityCountDiagnosticsPlugin,
-        LogDiagnosticsPlugin::filtered(FILTER.to_vec()),
-    ));
+        EntityCountDiagnosticsPlugin::default(),
+        // LogDiagnosticsPlugin::filtered(FILTER.to_vec()),
+    )).add_systems(Startup, setup);
 
     // Disable all diagnostics by default.
     let mut store = r!(app.world_mut().get_resource_mut::<DiagnosticsStore>());
     for diagnostic in store.iter_mut() {
         diagnostic.is_enabled = false;
     }
+}
+
+
+fn setup(mut commands: Commands) {
+    // commands.spawn(DiagnosticsOverlay::fps());
+    commands.spawn(DiagnosticsOverlay {
+        title: "Diagnostics".into(),
+        items: FILTER
+            .iter()
+            .map(|a| DiagnosticsOverlayItem::from(a.clone()))
+            .collect(),
+    });
+    // create a simple Perf UI with default settings
+    // and all entries provided by the crate:
+    // commands.spawn(PerfUiAllEntries::default());
 }
 
 // TODO: Workaround for <https://github.com/bevyengine/bevy/issues/19175>.

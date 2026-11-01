@@ -9,9 +9,9 @@ pub(super) fn plugin(app: &mut App) {
     app.add_systems(Update, Menu::Loading.on_update(update_loading));
 }
 
-fn spawn_loading_menu(mut commands: Commands, menu_root_ui: Single<Entity, With<MenuRootUi>>) {
+fn spawn_loading_menu(mut commands: Commands, menu_root: Res<MenuRootUi>) {
     commands
-        .entity(*menu_root_ui)
+        .entity(menu_root.ui)
         .with_child(widget::root(children![widget::center(children![
             widget::big_label("[b]Loading..."),
             widget::spacer(Vw(1.0)),

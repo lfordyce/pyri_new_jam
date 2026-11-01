@@ -1,7 +1,7 @@
-use bevy::ecs::entity::Entities;
-use bevy::ecs::system::SystemBuffer;
+use bevy::ecs::entity::{Entities, EntityAllocator};
 use bevy::ecs::system::SystemParam;
-use bevy::ecs::world::CommandQueue;
+use bevy::ecs::system::{SystemBuffer, SystemMeta};
+use bevy::ecs::world::{CommandQueue, DeferredWorld};
 
 use crate::prelude::*;
 
@@ -16,12 +16,13 @@ pub(super) fn plugin(app: &mut App) {
 #[derive(SystemParam)]
 pub struct LateCommands<'w, 's> {
     queue: Deferred<'s, LateCommandQueue>,
+    allocator: &'w EntityAllocator,
     entities: &'w Entities,
 }
 
 impl LateCommands<'_, '_> {
     pub fn commands(&mut self) -> Commands<'_, '_> {
-        Commands::new_from_entities(&mut self.queue.0, self.entities)
+        Commands::new_from_entities(&mut self.queue.0, self.allocator, self.entities)
     }
 }
 
@@ -29,10 +30,10 @@ impl LateCommands<'_, '_> {
 struct LateCommandQueue(CommandQueue);
 
 impl SystemBuffer for LateCommandQueue {
-    fn apply(&mut self, _system_meta: &bevy::ecs::system::SystemMeta, world: &mut World) {
-        r!(world.get_resource_mut::<LateCommandBuffer>())
-            .0
-            .append(&mut self.0);
+    fn queue(&mut self, _system_meta: &SystemMeta, mut world: DeferredWorld) {
+        if let Some(mut a) = world.get_resource_mut::<LateCommandBuffer>() {
+            a.0.append(&mut self.0);
+        }
     }
 }
 

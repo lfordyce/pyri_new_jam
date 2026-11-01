@@ -6,9 +6,9 @@ pub(super) fn plugin(app: &mut App) {
     app.add_systems(StateFlush, Menu::Main.on_enter(spawn_main_menu));
 }
 
-fn spawn_main_menu(mut commands: Commands, menu_root_ui: Single<Entity, With<MenuRootUi>>) {
+fn spawn_main_menu(mut commands: Commands, menu_root: Res<MenuRootUi>) {
     commands
-        .entity(*menu_root_ui)
+        .entity(menu_root.ui)
         .with_child(widget::root(children![widget::center(children![
             widget::header(children![widget::h1("[b]Pyri New Jam")]),
             widget::column_of_buttons(children![
@@ -23,15 +23,15 @@ fn spawn_main_menu(mut commands: Commands, menu_root_ui: Single<Entity, With<Men
         ])]));
 }
 
-fn open_intro(_: Trigger<Pointer<Click>>, mut menu: ResMut<NextStateStack<Menu>>) {
+fn open_intro(_: On<PointerClick>, mut menu: ResMut<NextStateStack<Menu>>) {
     menu.push(Menu::Intro);
 }
 
-fn open_settings(_: Trigger<Pointer<Click>>, mut menu: ResMut<NextStateStack<Menu>>) {
+fn open_settings(_: On<PointerClick>, mut menu: ResMut<NextStateStack<Menu>>) {
     menu.push(Menu::Settings);
 }
 
-fn quit_to_desktop(_: Trigger<Pointer<Click>>, mut app_exit: EventWriter<AppExit>) {
+fn quit_to_desktop(_: On<PointerClick>, mut app_exit: MessageWriter<AppExit>) {
     if cfg!(not(feature = "web")) {
         app_exit.write(AppExit::Success);
     }
