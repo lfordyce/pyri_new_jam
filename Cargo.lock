@@ -3243,9 +3243,9 @@ dependencies = [
 
 [[package]]
 name = "glam"
-version = "0.34.1"
+version = "0.34.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fc148d4ddd3930c52f9e5ae79b89805c6f07e9ff417e7b083e0348cea60a5aba"
+checksum = "54af5066834d6c2d404eb26ea036a15b15d9ff80db510b9a73ff95ab07f30831"
 dependencies = [
  "bytemuck",
 ]
@@ -4798,7 +4798,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9e079e5dff9fc17017bfb526d5b71fe077e603de662e4b22f6deb4b6b36e5895"
 dependencies = [
  "bytemuck",
- "glam 0.34.1",
+ "glam 0.34.2",
  "half",
  "log",
  "rdst",
@@ -5262,6 +5262,7 @@ dependencies = [
 [[package]]
 name = "pyri_state"
 version = "0.8.0"
+source = "git+https://github.com/lfordyce/pyri_state.git?branch=bevy_0_20_update#a9f65bad3166657bd60c6aecafabf95ec81dd6f5"
 dependencies = [
  "bevy_app",
  "bevy_camera",
@@ -5277,6 +5278,7 @@ dependencies = [
 [[package]]
 name = "pyri_state_derive"
 version = "0.8.0"
+source = "git+https://github.com/lfordyce/pyri_state.git?branch=bevy_0_20_update#a9f65bad3166657bd60c6aecafabf95ec81dd6f5"
 dependencies = [
  "bevy_macro_utils",
  "proc-macro2",
