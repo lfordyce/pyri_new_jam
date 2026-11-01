@@ -1,7 +1,7 @@
 pub mod backup;
 pub mod offset;
 
-use bevy::ui::UiSystem;
+use bevy::ui::UiSystems;
 
 use crate::prelude::*;
 
@@ -18,7 +18,7 @@ impl Configure for SaveBackupSystems {
     fn configure(app: &mut App) {
         app.configure_sets(
             PostUpdate,
-            ((UiSystem::Layout, PhysicsSet::Sync), Self).chain(),
+            ((UiSystems::Layout, PhysicsSystems::First), Self).chain(),
         );
     }
 }
@@ -42,7 +42,7 @@ impl Configure for PostTransformSystems {
                 SaveBackupSystems,
                 Self::Blend,
                 Self::ApplyFacing,
-                TransformSystem::TransformPropagate,
+                TransformSystems::Propagate,
                 Self::Finish,
                 // GlobalTransform may be slightly out of sync with Transform at this point...
             )

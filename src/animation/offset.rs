@@ -67,27 +67,47 @@ fn apply_node_offset(
     {
         let x = match offset.x {
             Val::Auto => 0.0,
-            x => c!(x.resolve(computed_node.size().x, viewport_size)),
+            x => c!(x.resolve(
+                1.0,
+                computed_node.size().x,
+                viewport_size,
+                computed_node.em_size,
+                computed_node.rem_size
+            )),
         };
         let y = match offset.y {
             Val::Auto => 0.0,
-            y => c!(y.resolve(computed_node.size().x, viewport_size)),
+            y => c!(y.resolve(
+                1.0,
+                computed_node.size().x,
+                viewport_size,
+                computed_node.em_size,
+                computed_node.rem_size
+            )),
         };
         transform.translation += vec3(x, y, 0.0);
 
         let mut box_shadow = cq!(box_shadow);
         c!(has_backup_box_shadow);
         for shadow in &mut box_shadow.0 {
-            if let Ok(x) = shadow
-                .x_offset
-                .add(Px(-x), computed_node.size().x, viewport_size)
-            {
+            if let Ok(x) = shadow.x_offset.add(
+                Px(-x),
+                1.0,
+                computed_node.size().x,
+                viewport_size,
+                computed_node.em_size,
+                computed_node.rem_size,
+            ) {
                 shadow.x_offset = x;
             }
-            if let Ok(y) = shadow
-                .y_offset
-                .add(Px(-y), computed_node.size().x, viewport_size)
-            {
+            if let Ok(y) = shadow.y_offset.add(
+                Px(-y),
+                1.0,
+                computed_node.size().x,
+                viewport_size,
+                computed_node.em_size,
+                computed_node.rem_size,
+            ) {
                 shadow.y_offset = y;
             }
         }

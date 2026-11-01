@@ -31,7 +31,7 @@ impl Configure for InteractionDisabled {
 }
 
 /// A table of values to set a component to by interaction state.
-#[derive(Component, Reflect, Default)]
+#[derive(Component, Reflect, Default, Clone)]
 #[reflect(Component)]
 #[require(Interaction, Previous<Interaction>)]
 pub struct InteractionTheme<C: Component<Mutability = Mutable> + Clone> {
@@ -164,29 +164,29 @@ impl Configure for InteractionSfx {
 }
 
 fn play_hover_sfx(
-    trigger: Trigger<Pointer<Over>>,
+    trigger: On<PointerOver>,
     audio_settings: Res<AudioSettings>,
     assets: Res<ThemeAssets>,
     sfx_query: Query<Option<&InteractionDisabled>, With<InteractionSfx>>,
     mut commands: Commands,
 ) {
-    let target = r!(trigger.get_target());
+    let target = trigger.event_target();
     let disabled = rq!(sfx_query.get(target));
     rq!(!matches!(disabled, Some(InteractionDisabled(true))));
 
-    commands.spawn(ui_audio(&audio_settings, assets.sfx_hover.clone()));
+    commands.spawn(ui_audio(&audio_settings, assets.sfx_hover.clone(), rand::random_range(0.9..1.5)));
 }
 
 fn play_click_sfx(
-    trigger: Trigger<Pointer<Click>>,
+    trigger: On<PointerClick>,
     audio_settings: Res<AudioSettings>,
     assets: Res<ThemeAssets>,
     sfx_query: Query<Option<&InteractionDisabled>, With<InteractionSfx>>,
     mut commands: Commands,
 ) {
-    let target = r!(trigger.get_target());
+    let target = trigger.event_target();
     let disabled = rq!(sfx_query.get(target));
     rq!(!matches!(disabled, Some(InteractionDisabled(true))));
 
-    commands.spawn(ui_audio(&audio_settings, assets.sfx_click.clone()));
+    commands.spawn(ui_audio(&audio_settings, assets.sfx_click.clone(), rand::random_range(0.9..1.5)));
 }

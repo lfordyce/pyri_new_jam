@@ -1,8 +1,9 @@
 use std::ops::Index;
 
-use bevy::ecs::component::Mutable;
-
 use crate::prelude::*;
+use bevy::ecs::component::Mutable;
+use bevy::ecs::template::TemplateContext;
+use crate::util::rich_text::RichText;
 
 pub(super) fn plugin(app: &mut App) {
     // Default to Bevy logo grey instead of Bevy website code block grey.
@@ -66,6 +67,7 @@ pub enum ThemeColor {
     Popup,
     PopupBorder,
     Overlay,
+    BorderColor,
 }
 
 impl ThemeColor {
@@ -148,6 +150,6 @@ impl ColorMut for BackgroundColor {
 
 impl ColorMut for BorderColor {
     fn color_mut(&mut self) -> &mut Color {
-        &mut self.0
+        &mut self.top
     }
 }

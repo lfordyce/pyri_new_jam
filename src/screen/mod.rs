@@ -36,9 +36,10 @@ fn spawn_screen_root_ui(mut commands: Commands) {
 }
 
 #[derive(
-    State, Copy, Clone, Default, Eq, PartialEq, Hash, Debug, Reflect, Serialize, Deserialize,
+    State, Resource, Copy, Clone, Default, Eq, PartialEq, Hash, Debug, Reflect, Serialize, Deserialize,
 )]
 #[state(before(Menu, Pause), react, bevy_state, log_flush)]
+#[reflect(Resource)]
 pub enum Screen {
     #[default]
     Splash,

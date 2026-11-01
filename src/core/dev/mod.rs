@@ -1,8 +1,6 @@
 //! Dev tools for dev builds.
 
 mod diagnostics;
-#[cfg(feature = "native_dev")]
-mod editor;
 mod physics;
 mod picking;
 mod state;
@@ -16,8 +14,6 @@ pub(super) fn plugin(app: &mut App) {
 
     app.add_plugins((
         diagnostics::plugin,
-        #[cfg(feature = "native_dev")]
-        editor::plugin,
         physics::plugin,
         picking::plugin,
         state::plugin,

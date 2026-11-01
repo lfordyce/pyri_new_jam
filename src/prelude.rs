@@ -27,7 +27,6 @@ pub use lazy_regex::*;
 pub use leafwing_input_manager::common_conditions::*;
 pub use leafwing_input_manager::prelude::*;
 pub use pyri_state::prelude::*;
-pub use pyri_tooltip::prelude::*;
 pub use rand::prelude::*;
 pub use serde::Deserialize;
 pub use serde::Serialize;

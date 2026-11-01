@@ -8,15 +8,15 @@ pub(super) fn plugin(app: &mut App) {
     app.add_systems(StateFlush, Menu::Intro.on_enter(spawn_intro_menu));
 }
 
-fn spawn_intro_menu(mut commands: Commands, menu_root_ui: Single<Entity, With<MenuRootUi>>) {
+fn spawn_intro_menu(mut commands: Commands, menu_root: Res<MenuRootUi>) {
     commands
-        .entity(*menu_root_ui)
+        .entity(menu_root.ui)
         .with_child(widget::root(children![widget::center(children![
             widget::header(children![widget::h1("[b]How to play")]),
             widget::label_base(
                 Vw(3.5),
                 1.8,
-                JustifyText::Center,
+                Justify::Center,
                 ThemeColor::BodyText,
                 "\
                 Be skillful,\n\
@@ -31,12 +31,12 @@ fn spawn_intro_menu(mut commands: Commands, menu_root_ui: Single<Entity, With<Me
         ])]));
 }
 
-fn go_back(_: Trigger<Pointer<Click>>, mut menu: ResMut<NextStateStack<Menu>>) {
+fn go_back(_: On<PointerClick>, mut menu: ResMut<NextStateStack<Menu>>) {
     menu.pop();
 }
 
 fn start_game(
-    _: Trigger<Pointer<Click>>,
+    _: On<PointerClick>,
     mut commands: Commands,
     progress: Res<ProgressTracker<BevyState<Screen>>>,
     mut menu: ResMut<NextStateStack<Menu>>,

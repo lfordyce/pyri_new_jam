@@ -1,28 +1,28 @@
-use bevy::asset::load_internal_binary_asset;
-use bevy::asset::weak_handle;
+use bevy::asset::{load_internal_binary_asset, uuid_handle};
 use bevy::window::PrimaryWindow;
 
 use crate::prelude::*;
+use crate::util::rich_text::{RichText, TextSection, TextStyle};
 
 pub(super) fn plugin(app: &mut App) {
     load_internal_binary_asset!(
         app,
         FONT_HANDLE,
         "../../assets/font/pypx.ttf",
-        |bytes: &[u8], _path: String| Font::try_from_bytes(bytes.to_vec()).unwrap()
+        |bytes: &[u8], _path: String| Font::from_bytes(bytes.to_vec())
     );
     load_internal_binary_asset!(
         app,
         BOLD_FONT_HANDLE,
         "../../assets/font/pypx-B.ttf",
-        |bytes: &[u8], _path: String| Font::try_from_bytes(bytes.to_vec()).unwrap()
+        |bytes: &[u8], _path: String| Font::from_bytes(bytes.to_vec())
     );
 
     app.configure::<DynamicFontSize>();
 }
 
-pub const FONT_HANDLE: Handle<Font> = weak_handle!("7bb72ab4-990c-4656-b7f1-08f1f2a2e72a");
-pub const BOLD_FONT_HANDLE: Handle<Font> = weak_handle!("b30e0c4e-52cb-4775-aaeb-ced1b93a4cd0");
+pub const FONT_HANDLE: Handle<Font> = uuid_handle!("7bb72ab4-990c-4656-b7f1-08f1f2a2e72a");
+pub const BOLD_FONT_HANDLE: Handle<Font> = uuid_handle!("b30e0c4e-52cb-4775-aaeb-ced1b93a4cd0");
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
@@ -71,9 +71,13 @@ pub fn apply_dynamic_font_size(
 
     for (font_size, computed_node, mut text) in &mut text_query {
         // Compute font size.
-        let size = c!(font_size
-            .size
-            .resolve(computed_node.size().x, viewport_size));
+        let size = c!(font_size.size.resolve(
+            1.0,
+            computed_node.size().x,
+            viewport_size,
+            computed_node.em_size,
+            computed_node.rem_size
+        ));
 
         // Round down to the nearest multiple of step.
         let resolved = if font_size.step > 0.0 {
@@ -85,7 +89,7 @@ pub fn apply_dynamic_font_size(
         let size = resolved.max(font_size.minimum);
 
         for section in &mut text.sections {
-            section.style.font_size = size;
+            section.style.font_size = FontSize::from(size);
         }
     }
 }
@@ -96,14 +100,14 @@ pub fn parse_rich(text: impl AsRef<str>) -> Vec<TextSection> {
         (
             "r",
             TextStyle {
-                font: FONT_HANDLE,
+                font: FontSource::from(FONT_HANDLE),
                 ..default()
             },
         ),
         (
             "b",
             TextStyle {
-                font: BOLD_FONT_HANDLE,
+                font: FontSource::from(BOLD_FONT_HANDLE),
                 ..default()
             },
         ),
@@ -173,11 +177,11 @@ mod tests {
 
     fn get_styles() -> HashMap<&'static str, TextStyle> {
         let r = TextStyle {
-            font: FONT_HANDLE,
+            font: FontSource::from(FONT_HANDLE),
             ..default()
         };
         let b = TextStyle {
-            font: BOLD_FONT_HANDLE,
+            font: FontSource::from(BOLD_FONT_HANDLE),
             ..default()
         };
         HashMap::from([("regular", r.clone()), ("bold", b.clone())])

@@ -10,7 +10,7 @@ pub(super) fn plugin(app: &mut App) {
             name: Some("bevy_app".to_string()),
             title: "Pyri New Jam".to_string(),
             present_mode: PresentMode::AutoVsync,
-            resolution: WindowResolution::new(960.0, 540.0),
+            resolution: WindowResolution::new(960, 540),
             fit_canvas_to_parent: true,
             ..default()
         }),

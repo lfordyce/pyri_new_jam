@@ -1,5 +1,5 @@
-use bevy::render::camera::ScalingMode;
-use bevy::render::camera::Viewport;
+use bevy::camera::ScalingMode;
+use bevy::camera::Viewport;
 use bevy::window::PrimaryWindow;
 use bevy::window::WindowResized;
 use bevy::window::WindowScaleFactorChanged;
@@ -129,8 +129,8 @@ impl Configure for Letterbox {
             PostUpdate,
             apply_letterbox.run_if(
                 any_match_filter::<Changed<Letterbox>>
-                    .or(on_event::<WindowResized>)
-                    .or(on_event::<WindowScaleFactorChanged>),
+                    .or_else(on_message::<WindowResized>)
+                    .or_else(on_message::<WindowScaleFactorChanged>),
             ),
         );
     }

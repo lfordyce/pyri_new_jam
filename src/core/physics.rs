@@ -1,9 +1,10 @@
 use crate::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_plugins(PhysicsPlugins::default().with_length_unit(PIXELS_PER_METER));
-    app.insert_resource(Gravity::ZERO);
-    app.insert_resource(DefaultFriction(Friction::ZERO));
+    // app.add_plugins(PhysicsPlugins::default().with_length_unit(PIXELS_PER_METER));
+    // app.insert_resource(Gravity::ZERO);
+    // app.insert_resource(DefaultFriction(Friction::ZERO));
+    app.add_plugins(PhysicsPlugins::new(FixedPostUpdate));
 
     app.add_systems(StateFlush, Pause.on_edge(unpause_physics, pause_physics));
 }
@@ -16,4 +17,13 @@ fn unpause_physics(mut physics_time: ResMut<Time<Physics>>) {
 
 fn pause_physics(mut physics_time: ResMut<Time<Physics>>) {
     physics_time.pause();
+}
+
+#[derive(PhysicsLayer, Default)]
+pub enum GameLayer {
+    #[default]
+    Default,
+    Player,
+    Enemy,
+    Projectile,
 }
