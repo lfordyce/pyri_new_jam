@@ -6,48 +6,49 @@ default-run = "run"
 
 
 [dependencies]
-avian2d = { version = "0.3", default-features = false, features = [
+avian2d = { version = "0.8", default-features = false, features = [
     "2d",
-    "f32",
-    "parry-f32",
+    #    "f32",
+    #    "parry-f32",
 ] }
-bevy = { version = "0.16", default-features = false, features = [
+bevy = { version = "^0.20", default-features = false, features = [
     # Core features
+    "2d_bevy_render",
+    "default_platform",
     "bevy_audio",
     "bevy_winit",
     "bevy_ui",
-    "bevy_ui_picking_backend",
-
+    "bevy_ui_render",
+    "picking",
+    "bevy_scene",
     # Extra features
     "async_executor",
     #"custom_cursor",
     #"default_font",
     "multi_threaded",
     "tonemapping_luts",
-
+    "bevy_asset",
     # Platform features
     "wayland",
     "webgl2",
     "x11",
-
     # File formats
     "png",
     "vorbis",
+    "zstd_rust",
+    #        "debug",
 ] }
-bevy_asset_loader = { version = "0.23", features = ["2d", "progress_tracking"] }
-bevy_common_assets = { version = "0.13", default-features = false, features = [
+bevy_asset_loader = { version = "0.28", features = ["2d", "progress_tracking"] }
+bevy_common_assets = { version = "0.18", default-features = false, features = [
     "ron",
 ] }
-bevy_editor_pls = { version = "0.11", features = [
-    "highlight_changes",
-], optional = true }
-bevy_mod_debugdump = { version = "0.13", optional = true }
-bevy_simple_prefs = "0.6"
-bevy_state = { version = "0.16", default-features = false }
-dirs = { version = "6", optional = true }
-iyes_progress = "0.14"
+bevy_mod_debugdump = { version = "0.17", optional = true }
+#bevy_simple_prefs = "0.9"
+bevy_state = { version = "0.20", default-features = false }
+dirs = { version = "7", optional = true }
+iyes_progress = "0.18"
 lazy-regex = { version = "3", default-features = false, features = ["lite"] }
-leafwing-input-manager = { version = "0.17", default-features = false, features = [
+leafwing-input-manager = { version = "0.22", default-features = false, features = [
     "mouse",
     "keyboard",
     "gamepad",
@@ -58,35 +59,32 @@ log = { version = "0.4", features = [
     "max_level_debug",
     "release_max_level_warn",
 ] }
-pyri_state = { version = "0.4", default-features = false, features = [
+pyri_state = { version = "0.8", default-features = false, features = [
     "bevy_app",
     "bevy_reflect",
     "bevy_state",
     "react",
     "stack",
 ] }
-pyri_tooltip = "0.4"
-rand = "0.8"
-ron = "0.10"
+# pyri_tooltip = "0.7"
+rand = "0.10.3"
+ron = "0.12"
 serde = "1"
-tiny_bail = "0.4"
+tiny_bail = "0.7"
 # Compile low-severity logs out of web builds for performance.
 tracing = { version = "0.1", features = [
     "max_level_debug",
     "release_max_level_warn",
 ] }
-variadics_please = "1"
+variadics_please = "2"
 
 [target.wasm32-unknown-unknown.dependencies]
 # TODO: Workaround for <https://github.com/rust-random/getrandom/issues/671>.
-getrandom = { version = "0.3", features = ["wasm_js"] }
+#getrandom = { version = "0.3", features = ["wasm_js"] }
 
 [patch.crates-io]
-# TODO: Workaround for <https://github.com/NiklasEi/bevy_asset_loader/issues/219>.
-bevy_asset_loader = { git = "https://github.com/benfrankel/bevy_asset_loader.git", branch = "direct-depend" }
-bevy_editor_pls = { git = "https://github.com/benfrankel/bevy_editor_pls.git", branch = "bevy-0-16" }
-# TODO: Workaround for <https://github.com/rust-random/getrandom/issues/671>.
-getrandom = { git = "https://github.com/benfrankel/getrandom.git" }
+#pyri_state = { path = "../pyri_state" }
+pyri_state = { git = "https://github.com/lfordyce/pyri_state.git", branch = "bevy_0_20_update" }
 
 
 [features]
@@ -103,12 +101,12 @@ dev = [
     "bevy/sysinfo_plugin",
     "bevy/track_location",
     "pyri_state/debug",
+    "bevy/render_dev_tools"
 ]
 native = ["dep:dirs", "avian2d/parallel"]
 native_dev = [
     "native",
     "dev",
-    "dep:bevy_editor_pls",
     "bevy/file_watcher",
     #"bevy/embedded_watcher",
 ]
